@@ -73,7 +73,17 @@ func TestFileHandler(t *testing.T) {
 		}
 	})
 
-	t.Run("DELETE request", func(t *testing.T) {
+	t.Run("Directory traversal attack", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/bucket/testbucket/../server.go", nil)
+		req.SetBasicAuth("", "testpassword")
+		rr := httptest.NewRecorder()
+
+		handler.ServeHTTP(rr, req)
+
+		if status := rr.Code; status != http.StatusBadRequest {
+			t.Errorf("expected status %v, got %v", http.StatusBadRequest, status)
+		}
+	})
 		req := httptest.NewRequest(http.MethodDelete, "/bucket/testbucket/testfile.txt", nil)
 		req.SetBasicAuth("", "testpassword")
 		rr := httptest.NewRecorder()
