@@ -19,7 +19,7 @@ func (d *Database) GetMostRecentAccessTime(bucketName string) (string, error) {
 
 	var lastAccessed string
 	if err := row.Scan(&lastAccessed); err != nil {
-		if err == sql.ErrNoRows {
+		if err == sql.ErrNoRows || lastAccessed == "" {
 			return "", nil
 		}
 		return "", err
