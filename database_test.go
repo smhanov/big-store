@@ -5,16 +5,22 @@ import (
 	"testing"
 )
 
+func safeCall(t *testing.T, fn func(), errMsg string) {
+	defer func() {
+		if r := recover(); r != nil {
+			t.Errorf("%s panicked: %v", errMsg, r)
+		}
+	}()
+	fn()
+}
+
 func TestDatabase(t *testing.T) {
 	// Create a temporary database file
 	dbPath := "test.db"
 	defer os.Remove(dbPath)
 
 	// Initialize the database
-	db, err := NewDatabase(dbPath)
-	if err != nil {
-		t.Fatalf("Failed to create database: %v", err)
-	}
+	db := NewDatabase(dbPath)
 	defer db.Close()
 
 	// Test data
@@ -22,31 +28,28 @@ func TestDatabase(t *testing.T) {
 	contentType := "text/plain"
 
 	// Test StoreFileMetadata
-	err = db.StoreFileMetadata(filename, contentType)
-	if err != nil {
-		t.Errorf("Failed to store file metadata: %v", err)
-	}
+	safeCall(t, func() {
+		db.StoreFileMetadata(filename, contentType)
+	}, "StoreFileMetadata")
 
 	// Test GetFileContentType
-	retrievedContentType, err := db.GetFileContentType(filename)
-	if err != nil {
-		t.Errorf("Failed to get file content type: %v", err)
-	}
+	var retrievedContentType string
+	safeCall(t, func() {
+		retrievedContentType = db.GetFileContentType(filename)
+	}, "GetFileContentType")
 	if retrievedContentType != contentType {
 		t.Errorf("Expected content type %s, got %s", contentType, retrievedContentType)
 	}
 
 	// Test DeleteFileMetadata
-	err = db.DeleteFileMetadata(filename)
-	if err != nil {
-		t.Errorf("Failed to delete file metadata: %v", err)
-	}
+	safeCall(t, func() {
+		db.DeleteFileMetadata(filename)
+	}, "DeleteFileMetadata")
 
 	// Verify deletion
-	retrievedContentType, err = db.GetFileContentType(filename)
-	if err != nil {
-		t.Errorf("Failed to get file content type after deletion: %v", err)
-	}
+	safeCall(t, func() {
+		retrievedContentType = db.GetFileContentType(filename)
+	}, "GetFileContentType after deletion")
 	if retrievedContentType != "" {
 		t.Errorf("Expected content type to be empty after deletion, got %s", retrievedContentType)
 	}
