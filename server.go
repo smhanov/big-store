@@ -64,13 +64,13 @@ func fileHandler(db *Database) http.HandlerFunc {
 			// Retrieve the content type from the request header.
 			contentType := r.Header.Get("Content-Type")
 			// Store the file metadata in the database.
-			db.StoreFileMetadata(fileName, contentType)
+			db.StoreFileMetadata(bucketName, fileName, contentType)
 			w.WriteHeader(http.StatusCreated)
 			log.Printf("done put request")
 
 		case http.MethodGet:
 			// Retrieve the content type from the database for the requested file.
-			contentType := db.GetFileContentType(fileName)
+			contentType := db.GetFileContentType(bucketName, fileName)
 			if contentType == "" {
 				http.Error(w, "File not found", http.StatusNotFound)
 				return
@@ -86,7 +86,7 @@ func fileHandler(db *Database) http.HandlerFunc {
 				return
 			}
 			// Delete the file metadata from the database.
-			db.DeleteFileMetadata(fileName)
+			db.DeleteFileMetadata(bucketName, fileName)
 			w.WriteHeader(http.StatusNoContent)
 
 		default:
