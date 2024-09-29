@@ -2,6 +2,7 @@ package main
 
 import (
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -42,6 +43,7 @@ func fileHandler(db *Database) http.HandlerFunc {
 		// Handle different HTTP methods for file operations.
 		switch r.Method {
 		case http.MethodPut:
+			log.Printf("Got put request")
 			// Ensure the bucket directory exists, creating it if necessary.
 			if err := os.MkdirAll(bucketPath, os.ModePerm); err != nil {
 				http.Error(w, "Failed to create bucket", http.StatusInternalServerError)
@@ -64,6 +66,7 @@ func fileHandler(db *Database) http.HandlerFunc {
 			// Store the file metadata in the database.
 			db.StoreFileMetadata(fileName, contentType)
 			w.WriteHeader(http.StatusCreated)
+			log.Printf("done put request")
 
 		case http.MethodGet:
 			// Retrieve the content type from the database for the requested file.
