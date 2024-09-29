@@ -96,6 +96,14 @@ func fileHandler(db *Database) http.HandlerFunc {
 				http.Error(w, "File not found", http.StatusNotFound)
 				return
 			}
+			// Get the file information to retrieve the size
+			fileInfo, err := os.Stat(filePath)
+			if err != nil {
+				http.Error(w, "File not found", http.StatusNotFound)
+				return
+			}
+			// Set the Content-Length header to the file size
+			w.Header().Set("Content-Length", fmt.Sprintf("%d", fileInfo.Size()))
 			w.WriteHeader(http.StatusOK)
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
