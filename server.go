@@ -105,8 +105,6 @@ func fileHandler(db *Database) http.HandlerFunc {
 			}
 			// Set the Content-Length header to the file size
 			w.Header().Set("Content-Length", fmt.Sprintf("%d", fileInfo.Size()))
-			w.WriteHeader(http.StatusOK)
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
 	}
 }
