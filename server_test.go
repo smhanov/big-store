@@ -17,6 +17,11 @@ func TestFileHandler(t *testing.T) {
 	defer os.Unsetenv("SERVER_PASSWORD")
 	defer os.Unsetenv("STORAGE_FOLDER")
 
+	// Create the testdata directory if it doesn't exist
+	if err := os.MkdirAll("testdata", os.ModePerm); err != nil {
+		t.Fatalf("failed to create testdata directory: %v", err)
+	}
+
 	// Create a temporary database
 	dbPath := filepath.Join("testdata", "file_metadata.db")
 	db := NewDatabase(dbPath)
