@@ -11,10 +11,10 @@ type BucketSummary struct {
 	BucketName string
 	FileCount  int
 	TotalSize  int64
-}
+	LastAccessed string
 
 // GetBucketSummaries returns a summary of all buckets, including the number of files and total disk usage.
-func GetBucketSummaries(storeDir string) ([]BucketSummary, error) {
+func GetBucketSummaries(storeDir string, db *Database) ([]BucketSummary, error) {
 	var summaries []BucketSummary
 
 	// Walk through the storage directory to gather bucket information.
@@ -43,6 +43,13 @@ func GetBucketSummaries(storeDir string) ([]BucketSummary, error) {
 				return err
 			}
 
+			// Get the most recent access time for the bucket
+			lastAccessed, err := db.GetMostRecentAccessTime(bucketName)
+			if err != nil {
+				return err
+			}
+			summary.LastAccessed = lastAccessed
+
 			summaries = append(summaries, summary)
 		}
 		return nil
@@ -56,14 +63,14 @@ func GetBucketSummaries(storeDir string) ([]BucketSummary, error) {
 }
 
 // PrintBucketSummaries prints the summary of all buckets.
-func PrintBucketSummaries(storeDir string) {
-	summaries, err := GetBucketSummaries(storeDir)
+func PrintBucketSummaries(storeDir string, db *Database) {
+	summaries, err := GetBucketSummaries(storeDir, db)
 	if err != nil {
 		fmt.Printf("Error retrieving bucket summaries: %v\n", err)
 		return
 	}
 
 	for _, summary := range summaries {
-		fmt.Printf("Bucket: %s, Files: %d, Total Size: %d bytes\n", summary.BucketName, summary.FileCount, summary.TotalSize)
+		fmt.Printf("Bucket: %s, Files: %d, Total Size: %d bytes, Last Accessed: %s\n", summary.BucketName, summary.FileCount, summary.TotalSize, summary.LastAccessed)
 	}
 }

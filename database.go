@@ -12,6 +12,21 @@ type Database struct {
 	db *sql.DB
 }
 
+// GetMostRecentAccessTime retrieves the most recent access time for files in a given bucket.
+func (d *Database) GetMostRecentAccessTime(bucketName string) (string, error) {
+	query := `SELECT MAX(last_accessed) FROM file_metadata WHERE filename LIKE ?;`
+	row := d.db.QueryRow(query, bucketName+"/%")
+
+	var lastAccessed string
+	if err := row.Scan(&lastAccessed); err != nil {
+		if err == sql.ErrNoRows {
+			return "", nil
+		}
+		return "", err
+	}
+
+	return lastAccessed, nil
+
 // NewDatabase initializes a new Database instance and sets up the schema.
 func NewDatabase(dbPath string) *Database {
 	// Open a connection to the SQLite database.
