@@ -7,6 +7,8 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+const contentTypeNotFound = "CONTENT_TYPE_NOT_FOUND"
+
 // Database struct encapsulates a sql.DB connection.
 type Database struct {
 	db *sql.DB
@@ -49,9 +51,9 @@ func (d *Database) initSchema() {
 	CREATE TABLE IF NOT EXISTS file_metadata (
 		bucket_name TEXT,
 		filename TEXT,
-		PRIMARY KEY (bucket_name, filename),
 		content_type TEXT,
-		last_accessed DATETIME
+		last_accessed DATETIME,
+		PRIMARY KEY (bucket_name, filename)
 	);
 	CREATE INDEX IF NOT EXISTS idx_filename ON file_metadata (filename);`
 	_, err := d.db.Exec(query)
@@ -62,6 +64,9 @@ func (d *Database) initSchema() {
 
 // StoreFileMetadata inserts or updates the metadata for a file.
 func (d *Database) StoreFileMetadata(bucketName, filename, contentType string) {
+	if contentType == "" {
+		contentType = "application/octet-stream"
+	}
 	query := `INSERT OR REPLACE INTO file_metadata (bucket_name, filename, content_type, last_accessed) VALUES (?, ?, ?, CURRENT_TIMESTAMP);`
 	_, err := d.db.Exec(query, bucketName, filename, contentType)
 	if err != nil {
