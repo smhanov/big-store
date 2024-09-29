@@ -35,7 +35,7 @@ func main() {
 	defer db.Close()
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/" {
-			fmt.Fprintln(w, "Big store is running.\n")
+			fmt.Fprintln(w, "Big store is running.")
 			PrintBucketSummaries(storeDir, db, w)
 		} else {
 			http.NotFound(w, r)
