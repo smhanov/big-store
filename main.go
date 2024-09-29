@@ -33,7 +33,7 @@ func main() {
 	dbPath := filepath.Join(storeDir, "file_metadata.db")
 	db := NewDatabase(dbPath)
 	defer db.Close()
-	http.HandleFunc("/", handler)
+	http.HandleFunc("/bucket/", fileHandler(db))
 	log.Printf("Starting server on port %s...", serverPort)
 	if err := http.ListenAndServe(":"+serverPort, nil); err != nil {
 		log.Fatalf("failed to start server: %v", err)
