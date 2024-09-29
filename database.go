@@ -12,7 +12,7 @@ type Database struct {
 	db *sql.DB
 }
 
-func NewDatabase(dbPath string) (*Database, error) {
+func NewDatabase(dbPath string) *Database {
 	db, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
 		log.Panicf("failed to open database: %v", err)
@@ -23,10 +23,10 @@ func NewDatabase(dbPath string) (*Database, error) {
 		log.Panicf("failed to initialize schema: %v", err)
 	}
 
-	return database, nil
+	return database
 }
 
-func (d *Database) initSchema() error {
+func (d *Database) initSchema() {
 	query := `
 	CREATE TABLE IF NOT EXISTS file_metadata (
 		filename TEXT PRIMARY KEY,
@@ -37,39 +37,36 @@ func (d *Database) initSchema() error {
 	if err != nil {
 		log.Panicf("failed to initialize schema: %v", err)
 	}
-	return nil
 }
 
-func (d *Database) StoreFileMetadata(filename, contentType string) error {
+func (d *Database) StoreFileMetadata(filename, contentType string) {
 	query := `INSERT OR REPLACE INTO file_metadata (filename, content_type) VALUES (?, ?);`
 	_, err := d.db.Exec(query, filename, contentType)
 	if err != nil {
 		log.Panicf("failed to store file metadata: %v", err)
 	}
-	return nil
 }
 
-func (d *Database) DeleteFileMetadata(filename string) error {
+func (d *Database) DeleteFileMetadata(filename string) {
 	query := `DELETE FROM file_metadata WHERE filename = ?;`
 	_, err := d.db.Exec(query, filename)
 	if err != nil {
 		log.Panicf("failed to delete file metadata: %v", err)
 	}
-	return nil
 }
 
-func (d *Database) GetFileContentType(filename string) (string, error) {
+func (d *Database) GetFileContentType(filename string) string {
 	query := `SELECT content_type FROM file_metadata WHERE filename = ?;`
 	row := d.db.QueryRow(query, filename)
 
 	var contentType string
 	if err := row.Scan(&contentType); err != nil {
 		if err == sql.ErrNoRows {
-			return "", nil
+			return ""
 		}
 		log.Panicf("failed to retrieve file content type: %v", err)
 	}
-	return contentType, nil
+	return contentType
 }
 
 func (d *Database) Close() error {
