@@ -54,7 +54,11 @@ func fileHandler(db *Database) http.HandlerFunc {
 				db.StoreFileMetadata(bucketName, fileName, contentType)
 				return contentType, fileInfo.Size(), nil
 			}
-			return contentType, 0, nil
+			fileInfo, err := os.Stat(filePath)
+			if err != nil {
+				return "", 0, fmt.Errorf("file not found")
+			}
+			return contentType, fileInfo.Size(), nil
 		}
 		switch r.Method {
 		case http.MethodPut:
