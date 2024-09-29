@@ -33,6 +33,13 @@ func main() {
 	dbPath := filepath.Join(storeDir, "file_metadata.db")
 	db := NewDatabase(dbPath)
 	defer db.Close()
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/" {
+			fmt.Fprintln(w, "Big store is running.")
+		} else {
+			http.NotFound(w, r)
+		}
+	})
 	http.HandleFunc("/bucket/", fileHandler(db))
 	log.Printf("Starting server on port %s...", serverPort)
 	if err := http.ListenAndServe(":"+serverPort, nil); err != nil {
