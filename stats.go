@@ -64,14 +64,14 @@ func GetBucketSummaries(storeDir string, db *Database) ([]BucketSummary, error) 
 }
 
 // PrintBucketSummaries prints the summary of all buckets.
-func PrintBucketSummaries(storeDir string, db *Database) {
+func PrintBucketSummaries(storeDir string, db *Database, writer io.Writer) {
 	summaries, err := GetBucketSummaries(storeDir, db)
 	if err != nil {
-		fmt.Printf("Error retrieving bucket summaries: %v\n", err)
+		fmt.Fprintf(writer, "Error retrieving bucket summaries: %v\n", err)
 		return
 	}
 
 	for _, summary := range summaries {
-		fmt.Printf("Bucket: %s, Files: %d, Total Size: %d bytes, Last Accessed: %s\n", summary.BucketName, summary.FileCount, summary.TotalSize, summary.LastAccessed)
+		fmt.Fprintf(writer, "Bucket: %s, Files: %d, Total Size: %d bytes, Last Accessed: %s\n", summary.BucketName, summary.FileCount, summary.TotalSize, summary.LastAccessed)
 	}
 }
