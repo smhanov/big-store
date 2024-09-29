@@ -66,8 +66,7 @@ func fileHandler(db *Database) http.HandlerFunc {
 					return "", 0, fmt.Errorf("file not found")
 				}
 				// Add the file to the database with default content type
-				contentType = "application/octet-stream"
-				db.StoreFileMetadata(bucketName, fileName, contentType)
+				db.StoreFileMetadata(bucketName, fileName, "")
 				return contentType, fileInfo.Size(), nil
 			}
 			fileInfo, err := os.Stat(filePath)
