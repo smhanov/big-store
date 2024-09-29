@@ -114,6 +114,7 @@ func fileHandler(db *Database) http.HandlerFunc {
 				http.Error(w, "File not found", http.StatusNotFound)
 				return
 			}
+			w.Header().Set("Content-Type", contentType)
 			w.Header().Set("Content-Length", fmt.Sprintf("%d", fileInfo.Size()))
 		}
 	}
