@@ -3,6 +3,8 @@ package main
 import (
 	"database/sql"
 	"log"
+	"mime"
+	"path/filepath"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -63,7 +65,11 @@ func (d *Database) initSchema() {
 // StoreFileMetadata inserts or updates the metadata for a file.
 func (d *Database) StoreFileMetadata(bucketName, filename, contentType string) {
 	if contentType == "" {
-		contentType = "application/octet-stream"
+		ext := filepath.Ext(filename)
+		contentType = mime.TypeByExtension(ext)
+		if contentType == "" {
+			contentType = "application/octet-stream"
+		}
 	}
 	query := `INSERT OR REPLACE INTO file_metadata (bucket_name, filename, content_type, last_accessed) VALUES (?, ?, ?, CURRENT_TIMESTAMP);`
 	_, err := d.db.Exec(query, bucketName, filename, contentType)
