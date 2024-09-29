@@ -84,6 +84,7 @@ func TestFileHandler(t *testing.T) {
 			t.Errorf("expected status %v, got %v", http.StatusBadRequest, status)
 		}
 	})
+	t.Run("DELETE request", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodDelete, "/bucket/testbucket/testfile.txt", nil)
 		req.SetBasicAuth("", "testpassword")
 		rr := httptest.NewRecorder()
@@ -93,5 +94,6 @@ func TestFileHandler(t *testing.T) {
 		if status := rr.Code; status != http.StatusNoContent {
 			t.Errorf("expected status %v, got %v", http.StatusNoContent, status)
 		}
+	})
 	})
 }
