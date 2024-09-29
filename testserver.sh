@@ -23,6 +23,12 @@ check_file_size() {
   curl -I -X HEAD -u :$PASSWORD "$SERVER_URL/bucket/$BUCKET_NAME/$filename" | grep Content-Length
 }
 
+# Function to delete a file
+delete_file() {
+  local filename=$1
+  curl -X DELETE -u :$PASSWORD "$SERVER_URL/bucket/$BUCKET_NAME/$filename"
+}
+
 # Test files
 upload_file "file1.txt" "Hello, World!"
 upload_file "file2.txt" "This is a test file."
