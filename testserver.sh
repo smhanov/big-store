@@ -2,7 +2,7 @@
 
 SERVER_URL="http://localhost:8080"
 BUCKET_NAME="testbucket"
-PASSWORD="testpassword"
+PASSWORD="1234"
 
 # Function to upload a file
 upload_file() {
