@@ -2,7 +2,13 @@
 
 SERVER_URL="http://localhost:8080"
 BUCKET_NAME="testbucket"
-PASSWORD="1234"
+PASSWORD="${SERVER_PASSWORD}"
+
+if [ -z "$PASSWORD" ]; then
+  echo "Error: SERVER_PASSWORD environment variable is not set."
+  echo "Please set it using: export SERVER_PASSWORD=yourpassword"
+  exit 1
+fi
 
 # Function to upload a file
 upload_file() {
