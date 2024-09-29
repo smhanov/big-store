@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"path/filepath"
 	"strings"
 )
 
@@ -34,13 +35,28 @@ func fileHandler(db *Database) http.HandlerFunc {
 			return
 		}
 
-		// Extract bucket and file names from the URL path.
+		// Sanitize bucket and file names
+		bucketName := sanitizePath(pathParts[2])
+		fileName := sanitizePath(pathParts[3])
+		if bucketName == "" || fileName == "" {
+			http.Error(w, "Invalid path", http.StatusBadRequest)
+			return
+		}
 		bucketName := pathParts[2]
 		fileName := pathParts[3]
 		bucketPath := filepath.Join(storeDir, bucketName)
 		filePath := filepath.Join(bucketPath, fileName)
 
-		// Helper function to ensure file metadata is in the database
+		// Helper function to sanitize paths
+		sanitizePath := func(path string) string {
+			// Clean the path to remove any .. sequences
+			cleanPath := filepath.Clean(path)
+			// Ensure the path does not start with .. or contain any .. segments
+			if strings.HasPrefix(cleanPath, "..") || strings.Contains(cleanPath, "/..") {
+				return ""
+			}
+			return cleanPath
+		}
 		ensureFileMetadata := func(bucketName, fileName, filePath string) (string, int64, error) {
 			contentType := db.GetFileContentType(bucketName, fileName)
 			if contentType == "" {
