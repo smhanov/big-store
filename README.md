@@ -18,6 +18,7 @@ This project is a simple Go server that implements file storage using a REST API
 
 - **PUT /bucket/{bucketname}/{filename}**: Store a file. Creates the bucket if it doesn't exist.
 - **GET /bucket/{bucketname}/{filename}**: Retrieve a file.
+- **HEAD /bucket/{bucketname}/{filename}**: Check if a file exists without retrieving it.
 - **DELETE /bucket/{bucketname}/{filename}**: Delete a file.
 
 ### Environment Variables

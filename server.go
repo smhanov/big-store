@@ -89,7 +89,14 @@ func fileHandler(db *Database) http.HandlerFunc {
 			db.DeleteFileMetadata(bucketName, fileName)
 			w.WriteHeader(http.StatusNoContent)
 
-		default:
+		case http.MethodHead:
+			// Check if the file exists without returning the file content.
+			contentType := db.GetFileContentType(bucketName, fileName)
+			if contentType == "" {
+				http.Error(w, "File not found", http.StatusNotFound)
+				return
+			}
+			w.WriteHeader(http.StatusOK)
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
 	}
