@@ -32,7 +32,8 @@ func (d *Database) initSchema() {
 	query := `
 	CREATE TABLE IF NOT EXISTS file_metadata (
 		filename TEXT PRIMARY KEY,
-		content_type TEXT
+		content_type TEXT,
+		last_accessed DATETIME
 	);
 	CREATE INDEX IF NOT EXISTS idx_filename ON file_metadata (filename);`
 	_, err := d.db.Exec(query)
@@ -43,7 +44,7 @@ func (d *Database) initSchema() {
 
 // StoreFileMetadata inserts or updates the metadata for a file.
 func (d *Database) StoreFileMetadata(filename, contentType string) {
-	query := `INSERT OR REPLACE INTO file_metadata (filename, content_type) VALUES (?, ?);`
+	query := `INSERT OR REPLACE INTO file_metadata (filename, content_type, last_accessed) VALUES (?, ?, CURRENT_TIMESTAMP);`
 	_, err := d.db.Exec(query, filename, contentType)
 	if err != nil {
 		log.Panicf("failed to store file metadata: %v", err)
@@ -71,6 +72,13 @@ func (d *Database) GetFileContentType(filename string) string {
 		}
 		log.Panicf("failed to retrieve file content type: %v", err)
 	}
+	// Update the last_accessed time
+	updateQuery := `UPDATE file_metadata SET last_accessed = CURRENT_TIMESTAMP WHERE filename = ?;`
+	_, err := d.db.Exec(updateQuery, filename)
+	if err != nil {
+		log.Panicf("failed to update last accessed time: %v", err)
+	}
+
 	return contentType
 }
 
