@@ -2,15 +2,16 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 )
 
 // BucketSummary holds the summary information for a bucket.
 type BucketSummary struct {
-	BucketName string
-	FileCount  int
-	TotalSize  int64
+	BucketName   string
+	FileCount    int
+	TotalSize    int64
 	LastAccessed string
 }
 
