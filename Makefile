@@ -12,6 +12,6 @@ build:
 	docker build -t $(IMAGE_NAME) .
 
 run:
-	docker run -d --name $(CONTAINER_NAME) -p $(PORT):8080 -e SERVER_PASSWORD=yourpassword -e STORAGE_FOLDER=/data -v $(PWD)/data:/data $(IMAGE_NAME)
+	docker run -d --name $(CONTAINER_NAME) -p $(PORT):8080 -e SERVER_PASSWORD=1234 -e STORAGE_FOLDER=/data -v $(PWD)/data:/data $(IMAGE_NAME)
 
 update: stop build run
