@@ -73,10 +73,15 @@ func fileHandler(db *Database) http.HandlerFunc {
 			// Retrieve the content type from the database for the requested file.
 			contentType := db.GetFileContentType(bucketName, fileName)
 			if contentType == "" {
-				http.Error(w, "File not found", http.StatusNotFound)
-				return
+				// Check if the file exists on disk
+				if _, err := os.Stat(filePath); os.IsNotExist(err) {
+					http.Error(w, "File not found", http.StatusNotFound)
+					return
+				}
+				// Add the file to the database with default content type
+				contentType = "application/octet-stream"
+				db.StoreFileMetadata(bucketName, fileName, contentType)
 			}
-			// Set the content type header and serve the file.
 			w.Header().Set("Content-Type", contentType)
 			http.ServeFile(w, r, filePath)
 
@@ -94,16 +99,20 @@ func fileHandler(db *Database) http.HandlerFunc {
 			// Check if the file exists without returning the file content.
 			contentType := db.GetFileContentType(bucketName, fileName)
 			if contentType == "" {
-				http.Error(w, "File not found", http.StatusNotFound)
-				return
+				// Check if the file exists on disk
+				if _, err := os.Stat(filePath); os.IsNotExist(err) {
+					http.Error(w, "File not found", http.StatusNotFound)
+					return
+				}
+				// Add the file to the database with default content type
+				contentType = "application/octet-stream"
+				db.StoreFileMetadata(bucketName, fileName, contentType)
 			}
-			// Get the file information to retrieve the size
 			fileInfo, err := os.Stat(filePath)
 			if err != nil {
 				http.Error(w, "File not found", http.StatusNotFound)
 				return
 			}
-			// Set the Content-Length header to the file size
 			w.Header().Set("Content-Length", fmt.Sprintf("%d", fileInfo.Size()))
 		}
 	}
