@@ -24,18 +24,19 @@ func TestDatabase(t *testing.T) {
 	defer db.Close()
 
 	// Test data
+	bucketName := "testbucket"
 	filename := "testfile.txt"
 	contentType := "text/plain"
 
 	// Test StoreFileMetadata
 	safeCall(t, func() {
-		db.StoreFileMetadata(filename, contentType)
+		db.StoreFileMetadata(bucketName, filename, contentType)
 	}, "StoreFileMetadata")
 
 	// Test GetFileContentType
 	var retrievedContentType string
 	safeCall(t, func() {
-		retrievedContentType = db.GetFileContentType(filename)
+		retrievedContentType = db.GetFileContentType(bucketName, filename)
 	}, "GetFileContentType")
 	if retrievedContentType != contentType {
 		t.Errorf("Expected content type %s, got %s", contentType, retrievedContentType)
@@ -43,12 +44,12 @@ func TestDatabase(t *testing.T) {
 
 	// Test DeleteFileMetadata
 	safeCall(t, func() {
-		db.DeleteFileMetadata(filename)
+		db.DeleteFileMetadata(bucketName, filename)
 	}, "DeleteFileMetadata")
 
 	// Verify deletion
 	safeCall(t, func() {
-		retrievedContentType = db.GetFileContentType(filename)
+		retrievedContentType = db.GetFileContentType(bucketName, filename)
 	}, "GetFileContentType after deletion")
 	if retrievedContentType != "" {
 		t.Errorf("Expected content type to be empty after deletion, got %s", retrievedContentType)
