@@ -30,14 +30,11 @@ func (d *Database) initSchema() error {
 	CREATE TABLE IF NOT EXISTS file_metadata (
 		filename TEXT PRIMARY KEY,
 		content_type TEXT
+	);
 	CREATE INDEX IF NOT EXISTS idx_filename ON file_metadata (filename);`
 	_, err := d.db.Exec(query)
 	if err != nil {
 		return fmt.Errorf("failed to initialize schema: %w", err)
-	`
-	_, err = d.db.Exec(query)
-	if err != nil {
-		return fmt.Errorf("failed to create index: %w", err)
 	}
 	return nil
 }
