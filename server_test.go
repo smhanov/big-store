@@ -41,7 +41,6 @@ func TestFileHandler(t *testing.T) {
 		if status := rr.Code; status != http.StatusCreated {
 			t.Errorf("expected status %v, got %v", http.StatusCreated, status)
 		}
-	})
 
 	t.Run("GET request", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "/bucket/testbucket/testfile.txt", nil)
