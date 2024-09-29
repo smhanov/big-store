@@ -73,11 +73,11 @@ func PrintBucketSummaries(storeDir string, db *Database, writer io.Writer) {
 	}
 
 	// Define the column headers
-	fmt.Fprintf(writer, "%-20s %-10s %-15s %-20s\n", "Bucket Name", "Files", "Total Size", "Last Accessed")
-	fmt.Fprintf(writer, "%s\n", strings.Repeat("-", 65))
+	fmt.Fprintf(writer, "| %-18s | %-8s | %-13s | %-18s |\n", "Bucket Name", "Files", "Total Size", "Last Accessed")
+	fmt.Fprintf(writer, "|%s|\n", strings.Repeat("-", 65))
 
 	// Print each bucket summary in a formatted row
 	for _, summary := range summaries {
-		fmt.Fprintf(writer, "%-20s %-10d %-15d %-20s\n", summary.BucketName, summary.FileCount, summary.TotalSize, summary.LastAccessed)
+		fmt.Fprintf(writer, "| %-18s | %-8d | %-13d | %-18s |\n", summary.BucketName, summary.FileCount, summary.TotalSize, summary.LastAccessed)
 	}
 }
