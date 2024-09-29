@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // BucketSummary holds the summary information for a bucket.
@@ -73,8 +74,8 @@ func PrintBucketSummaries(storeDir string, db *Database, writer io.Writer) {
 	}
 
 	// Define the column headers
-	fmt.Fprintf(writer, "| %-18s | %-8s | %-13s | %-18s |\n", "Bucket Name", "Files", "Total Size", "Last Accessed")
-	fmt.Fprintf(writer, "|%s|\n", strings.Repeat("-", 65))
+	fmt.Fprintf(writer, "| %-18s | %-8s | %-13s | %-19s |\n", "Bucket Name", "Files", "Total Size", "Last Accessed")
+	fmt.Fprintf(writer, "|%s|\n", strings.Repeat("-", 69))
 
 	// Print each bucket summary in a formatted row
 	for _, summary := range summaries {
