@@ -70,18 +70,18 @@ func (d *Database) StoreFileMetadata(bucketName, filename, contentType string) {
 }
 
 // DeleteFileMetadata removes the metadata for a file.
-func (d *Database) DeleteFileMetadata(filename string) {
-	query := `DELETE FROM file_metadata WHERE filename = ?;`
-	_, err := d.db.Exec(query, filename)
+func (d *Database) DeleteFileMetadata(bucketName, filename string) {
+	query := `DELETE FROM file_metadata WHERE bucket_name = ? AND filename = ?;`
+	_, err := d.db.Exec(query, bucketName, filename)
 	if err != nil {
 		log.Panicf("failed to delete file metadata: %v", err)
 	}
 }
 
 // GetFileContentType retrieves the content type for a given filename.
-func (d *Database) GetFileContentType(filename string) string {
-	query := `SELECT content_type FROM file_metadata WHERE filename = ?;`
-	row := d.db.QueryRow(query, filename)
+func (d *Database) GetFileContentType(bucketName, filename string) string {
+	query := `SELECT content_type FROM file_metadata WHERE bucket_name = ? AND filename = ?;`
+	row := d.db.QueryRow(query, bucketName, filename)
 
 	var contentType string
 	if err := row.Scan(&contentType); err != nil {
@@ -91,8 +91,8 @@ func (d *Database) GetFileContentType(filename string) string {
 		log.Panicf("failed to retrieve file content type: %v", err)
 	}
 	// Update the last_accessed time
-	updateQuery := `UPDATE file_metadata SET last_accessed = CURRENT_TIMESTAMP WHERE filename = ?;`
-	_, err := d.db.Exec(updateQuery, filename)
+	updateQuery := `UPDATE file_metadata SET last_accessed = CURRENT_TIMESTAMP WHERE bucket_name = ? AND filename = ?;`
+	_, err := d.db.Exec(updateQuery, bucketName, filename)
 	if err != nil {
 		log.Panicf("failed to update last accessed time: %v", err)
 	}
