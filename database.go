@@ -18,25 +18,22 @@ func NewDatabase(dbPath string) (*Database, error) {
 	}
 
 	database := &Database{db: db}
-	if err := database.createTable(); err != nil {
+	if err := database.initSchema(); err != nil {
 		return nil, err
 	}
 
 	return database, nil
 }
 
-func (d *Database) createTable() error {
+func (d *Database) initSchema() error {
 	query := `
 	CREATE TABLE IF NOT EXISTS file_metadata (
 		filename TEXT PRIMARY KEY,
 		content_type TEXT
-	);`
+	CREATE INDEX IF NOT EXISTS idx_filename ON file_metadata (filename);`
 	_, err := d.db.Exec(query)
 	if err != nil {
-		return fmt.Errorf("failed to create table: %w", err)
-	}
-	query = `
-	CREATE INDEX IF NOT EXISTS idx_filename ON file_metadata (filename);
+		return fmt.Errorf("failed to initialize schema: %w", err)
 	`
 	_, err = d.db.Exec(query)
 	if err != nil {
