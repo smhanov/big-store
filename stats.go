@@ -27,6 +27,7 @@ func humanReadableSize(size int64) string {
 	default:
 		return fmt.Sprintf("%d bytes", size)
 	}
+}
 
 // GetBucketSummaries returns a summary of all buckets, including the number of files and total disk usage.
 func GetBucketSummaries(storeDir string, db *Database) ([]BucketSummary, error) {
