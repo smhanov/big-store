@@ -42,18 +42,20 @@ func fileHandler(db *Database) http.HandlerFunc {
 		filePath := filepath.Join(bucketPath, fileName)
 
 		// Helper function to ensure file metadata is in the database
-		ensureFileMetadata := func(bucketName, fileName, filePath string) (string, error) {
+		ensureFileMetadata := func(bucketName, fileName, filePath string) (string, int64, error) {
 			contentType := db.GetFileContentType(bucketName, fileName)
 			if contentType == "" {
 				// Check if the file exists on disk
-				if _, err := os.Stat(filePath); os.IsNotExist(err) {
-					return "", fmt.Errorf("file not found")
+				fileInfo, err := os.Stat(filePath)
+				if os.IsNotExist(err) {
+					return "", 0, fmt.Errorf("file not found")
 				}
 				// Add the file to the database with default content type
 				contentType = "application/octet-stream"
 				db.StoreFileMetadata(bucketName, fileName, contentType)
+				return contentType, fileInfo.Size(), nil
 			}
-			return contentType, nil
+			return contentType, 0, nil
 		}
 		switch r.Method {
 		case http.MethodPut:
@@ -84,7 +86,7 @@ func fileHandler(db *Database) http.HandlerFunc {
 
 		case http.MethodGet:
 			// Ensure file metadata is present
-			contentType, err := ensureFileMetadata(bucketName, fileName, filePath)
+			contentType, fileSize, err := ensureFileMetadata(bucketName, fileName, filePath)
 			if err != nil {
 				http.Error(w, "File not found", http.StatusNotFound)
 				return
@@ -109,13 +111,8 @@ func fileHandler(db *Database) http.HandlerFunc {
 				http.Error(w, "File not found", http.StatusNotFound)
 				return
 			}
-			fileInfo, err := os.Stat(filePath)
-			if err != nil {
-				http.Error(w, "File not found", http.StatusNotFound)
-				return
-			}
 			w.Header().Set("Content-Type", contentType)
-			w.Header().Set("Content-Length", fmt.Sprintf("%d", fileInfo.Size()))
+			w.Header().Set("Content-Length", fmt.Sprintf("%d", fileSize))
 		}
 	}
 }
