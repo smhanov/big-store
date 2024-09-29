@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -59,7 +58,6 @@ func fileHandler(db *Database) http.HandlerFunc {
 		}
 		switch r.Method {
 		case http.MethodPut:
-			log.Printf("Got put request")
 			// Ensure the bucket directory exists, creating it if necessary.
 			if err := os.MkdirAll(bucketPath, os.ModePerm); err != nil {
 				http.Error(w, "Failed to create bucket", http.StatusInternalServerError)
@@ -82,11 +80,10 @@ func fileHandler(db *Database) http.HandlerFunc {
 			// Store the file metadata in the database.
 			db.StoreFileMetadata(bucketName, fileName, contentType)
 			w.WriteHeader(http.StatusCreated)
-			log.Printf("done put request")
 
 		case http.MethodGet:
 			// Ensure file metadata is present
-			contentType, fileSize, err := ensureFileMetadata(bucketName, fileName, filePath)
+			contentType, _, err := ensureFileMetadata(bucketName, fileName, filePath)
 			if err != nil {
 				http.Error(w, "File not found", http.StatusNotFound)
 				return
@@ -106,7 +103,7 @@ func fileHandler(db *Database) http.HandlerFunc {
 
 		case http.MethodHead:
 			// Ensure file metadata is present
-			contentType, err := ensureFileMetadata(bucketName, fileName, filePath)
+			contentType, fileSize, err := ensureFileMetadata(bucketName, fileName, filePath)
 			if err != nil {
 				http.Error(w, "File not found", http.StatusNotFound)
 				return
