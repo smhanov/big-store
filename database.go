@@ -14,8 +14,8 @@ type Database struct {
 
 // GetMostRecentAccessTime retrieves the most recent access time for files in a given bucket.
 func (d *Database) GetMostRecentAccessTime(bucketName string) (string, error) {
-	query := `SELECT MAX(last_accessed) FROM file_metadata WHERE filename LIKE ?;`
-	row := d.db.QueryRow(query, bucketName+"/%")
+	query := `SELECT MAX(last_accessed) FROM file_metadata WHERE bucket_name = ?;`
+	row := d.db.QueryRow(query, bucketName)
 
 	var lastAccessed string
 	if err := row.Scan(&lastAccessed); err != nil {
@@ -47,7 +47,9 @@ func NewDatabase(dbPath string) *Database {
 func (d *Database) initSchema() {
 	query := `
 	CREATE TABLE IF NOT EXISTS file_metadata (
-		filename TEXT PRIMARY KEY,
+		bucket_name TEXT,
+		filename TEXT,
+		PRIMARY KEY (bucket_name, filename),
 		content_type TEXT,
 		last_accessed DATETIME
 	);
@@ -59,9 +61,9 @@ func (d *Database) initSchema() {
 }
 
 // StoreFileMetadata inserts or updates the metadata for a file.
-func (d *Database) StoreFileMetadata(filename, contentType string) {
-	query := `INSERT OR REPLACE INTO file_metadata (filename, content_type, last_accessed) VALUES (?, ?, CURRENT_TIMESTAMP);`
-	_, err := d.db.Exec(query, filename, contentType)
+func (d *Database) StoreFileMetadata(bucketName, filename, contentType string) {
+	query := `INSERT OR REPLACE INTO file_metadata (bucket_name, filename, content_type, last_accessed) VALUES (?, ?, ?, CURRENT_TIMESTAMP);`
+	_, err := d.db.Exec(query, bucketName, filename, contentType)
 	if err != nil {
 		log.Panicf("failed to store file metadata: %v", err)
 	}
