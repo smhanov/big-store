@@ -7,8 +7,6 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-const contentTypeNotFound = "CONTENT_TYPE_NOT_FOUND"
-
 // Database struct encapsulates a sql.DB connection.
 type Database struct {
 	db *sql.DB

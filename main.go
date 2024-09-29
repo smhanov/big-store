@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -9,10 +8,6 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 )
-
-func handler(w http.ResponseWriter, _ *http.Request) {
-	fmt.Fprintf(w, "Hello, World!")
-}
 
 func getEnv(key, fallback string) string {
 	value, exists := os.LookupEnv(key)
@@ -35,7 +30,6 @@ func main() {
 	defer db.Close()
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/" {
-			fmt.Fprintln(w, "Big store is running.")
 			PrintBucketSummaries(storeDir, db, w)
 		} else {
 			http.NotFound(w, r)
