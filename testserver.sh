@@ -6,7 +6,8 @@ PASSWORD="${SERVER_PASSWORD}"
 
 if [ -z "$PASSWORD" ]; then
   echo "Error: SERVER_PASSWORD environment variable is not set."
-  echo "Please set it using: export SERVER_PASSWORD=yourpassword"
+  echo "Please set it using:"
+  echo " SERVER_PASSWORD=yourpassword ./testserver.sh"
   exit 1
 fi
 
