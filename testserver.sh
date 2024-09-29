@@ -56,3 +56,12 @@ echo "Checking size of file2.txt:"
 check_file_size "file2.txt"
 echo "Checking size of file3.txt:"
 check_file_size "file3.txt"
+# Cleanup function to delete test files
+cleanup() {
+  delete_file "file1.txt"
+  delete_file "file2.txt"
+  delete_file "file3.txt"
+}
+
+# Register the cleanup function to be called on the script's exit
+trap cleanup EXIT
