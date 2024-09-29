@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -19,9 +18,7 @@ func NewDatabase(dbPath string) *Database {
 	}
 
 	database := &Database{db: db}
-	if err := database.initSchema(); err != nil {
-		log.Panicf("failed to initialize schema: %v", err)
-	}
+	database.initSchema()
 
 	return database
 }
