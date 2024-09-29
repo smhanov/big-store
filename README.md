@@ -14,6 +14,8 @@ This project is a simple Go server that implements file storage using a REST API
 
 ### API Endpoints
 
+- **GET /**: Accessing the server without specifying a bucket will display a summary of all buckets and the storage space used.
+
 - **PUT /bucket/{bucketname}/{filename}**: Store a file. Creates the bucket if it doesn't exist.
 - **GET /bucket/{bucketname}/{filename}**: Retrieve a file.
 - **DELETE /bucket/{bucketname}/{filename}**: Delete a file.
