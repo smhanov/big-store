@@ -35,6 +35,13 @@ func (d *Database) createTable() error {
 	if err != nil {
 		return fmt.Errorf("failed to create table: %w", err)
 	}
+	query = `
+	CREATE INDEX IF NOT EXISTS idx_filename ON file_metadata (filename);
+	`
+	_, err = d.db.Exec(query)
+	if err != nil {
+		return fmt.Errorf("failed to create index: %w", err)
+	}
 	return nil
 }
 
