@@ -26,6 +26,7 @@ func (d *Database) GetMostRecentAccessTime(bucketName string) (string, error) {
 	}
 
 	return lastAccessed, nil
+}
 
 // NewDatabase initializes a new Database instance and sets up the schema.
 func NewDatabase(dbPath string) *Database {

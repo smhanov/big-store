@@ -12,6 +12,7 @@ type BucketSummary struct {
 	FileCount  int
 	TotalSize  int64
 	LastAccessed string
+}
 
 // GetBucketSummaries returns a summary of all buckets, including the number of files and total disk usage.
 func GetBucketSummaries(storeDir string, db *Database) ([]BucketSummary, error) {
@@ -40,7 +41,7 @@ func GetBucketSummaries(storeDir string, db *Database) ([]BucketSummary, error) 
 				return nil
 			})
 			if err != nil {
-				return err
+				return fmt.Errorf("error getting most recent access time for bucket %s: %w", bucketName, err)
 			}
 
 			// Get the most recent access time for the bucket
