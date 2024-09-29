@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
@@ -24,7 +23,7 @@ func getEnv(key, fallback string) string {
 }
 
 func main() {
-	storeDir := getEnv("BIG_STORE_DIR", "data")
+	storeDir := getEnv("STORAGE_FOLDER", "data")
 	serverPort := getEnv("SERVER_PORT", "8080")
 
 	if err := os.MkdirAll(storeDir, os.ModePerm); err != nil {
@@ -35,5 +34,8 @@ func main() {
 	db := NewDatabase(dbPath)
 	defer db.Close()
 	http.HandleFunc("/", handler)
-	http.ListenAndServe(":8080", nil)
+	log.Printf("Starting server on port %s...", serverPort)
+	if err := http.ListenAndServe(":"+serverPort, nil); err != nil {
+		log.Fatalf("failed to start server: %v", err)
+	}
 }
